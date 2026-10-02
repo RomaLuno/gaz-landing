@@ -241,12 +241,18 @@ legend{font:500 16px var(--f-body);color:var(--muted);margin-bottom:8px}
 footer{padding-block:30px 44px;font:400 15px/1.5 var(--f-body);color:var(--soft)}
 
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);transition:transform .25s ease,opacity .25s ease}
-.sticky .btn{width:100%}
+.sticky .btn{width:100%;min-height:60px;font-size:19px}
 .sticky.away{transform:translateY(110%);opacity:0;pointer-events:none}
 @media (min-width:760px){
   body{padding-bottom:0}
-  .sticky{left:auto;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));padding:0;background:none;border:0;backdrop-filter:none}
-  .sticky .btn{width:auto;box-shadow:0 6px 0 -2px var(--pipe-deep),0 18px 40px -12px rgba(24,35,46,.45)}}
+  .sticky{left:50%;right:auto;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:0;background:none;border:0;backdrop-filter:none}
+  .sticky.away{transform:translate(-50%,160%)}
+  .sticky .btn{width:auto;min-height:68px;padding:0 48px;font-size:21px;box-shadow:0 6px 0 -2px var(--pipe-deep),0 22px 50px -10px rgba(24,35,46,.55)}}
+/* пульс вокруг кнопки — привлекает взгляд */
+.sticky .btn{position:relative}
+.sticky .btn::after{content:"";position:absolute;inset:-6px;border-radius:999px;border:3px solid var(--pipe);opacity:0;animation:pulse 2.4s ease-out infinite}
+@keyframes pulse{0%{transform:scale(.92);opacity:.9}70%{transform:scale(1.12);opacity:0}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.sticky .btn::after{animation:none}}
 /* окно заявки */
 dialog.lead-modal{border:0;border-radius:22px;padding:28px 22px 24px;width:min(94vw,480px);max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px -20px rgba(15,22,30,.5)}
 dialog.lead-modal::backdrop{background:rgba(15,22,30,.6)}
