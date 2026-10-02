@@ -151,7 +151,7 @@ dialog.zoom button{width:44px;height:44px;border-radius:50%;border:0;background:
 .tier small{font:400 16px/1.4 var(--f-body);opacity:.85}
 .tier-fallback{font-size:19px;color:#C9D2DB}
 /* поле ника Telegram */
-#tg-wrap[hidden]{display:none}
+#f-tg-wrap[hidden],#m-tg-wrap[hidden]{display:none}
 
 /* ---------- ШАГИ ---------- */
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
@@ -240,9 +240,20 @@ legend{font:500 16px var(--f-body);color:var(--muted);margin-bottom:8px}
 
 footer{padding-block:30px 44px;font:400 15px/1.5 var(--f-body);color:var(--soft)}
 
-.sticky{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);transition:transform .25s ease,opacity .25s ease}
 .sticky .btn{width:100%}
-@media (min-width:760px){.sticky{display:none}}
+.sticky.away{transform:translateY(110%);opacity:0;pointer-events:none}
+@media (min-width:760px){
+  body{padding-bottom:0}
+  .sticky{left:auto;right:24px;bottom:calc(24px + env(safe-area-inset-bottom,0px));padding:0;background:none;border:0;backdrop-filter:none}
+  .sticky .btn{width:auto;box-shadow:0 6px 0 -2px var(--pipe-deep),0 18px 40px -12px rgba(24,35,46,.45)}}
+/* окно заявки */
+dialog.lead-modal{border:0;border-radius:22px;padding:28px 22px 24px;width:min(94vw,480px);max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px -20px rgba(15,22,30,.5)}
+dialog.lead-modal::backdrop{background:rgba(15,22,30,.6)}
+.lm-head{display:grid;gap:8px;margin-bottom:18px;padding-right:40px}
+.lm-head h3{font:700 24px/1.2 var(--f-display)}
+.lm-head p{color:var(--muted);font-size:17px}
+.lm-close{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:var(--tint);color:var(--ink);font:600 24px/1 var(--f-body);cursor:pointer}
 </style>
 </head>
 <body>
@@ -412,24 +423,46 @@ footer{padding-block:30px 44px;font:400 15px/1.5 var(--f-body);color:var(--soft)
         <label class="f" for="f-place">Поселение или СНТ<input id="f-place" name="place" type="text" placeholder="например, Марушкинское"></label>
         <fieldset><legend>Как удобнее связаться</legend>
           <div class="seg">
-            <label><input type="radio" name="via" id="via-call" value="Позвонить" checked><span>Позвонить</span></label>
-            <label><input type="radio" name="via" id="via-wa" value="WhatsApp"><span>WhatsApp</span></label>
-            <label><input type="radio" name="via" id="via-tg" value="Telegram"><span>Telegram</span></label>
+            <label><input type="radio" name="via" id="f-via-call" value="Позвонить" checked><span>Позвонить</span></label>
+            <label><input type="radio" name="via" id="f-via-wa" value="WhatsApp"><span>WhatsApp</span></label>
+            <label><input type="radio" name="via" id="f-via-tg" value="Telegram"><span>Telegram</span></label>
           </div>
         </fieldset>
-        <label class="f" for="f-tg" id="tg-wrap" hidden>Ник в Telegram<input id="f-tg" name="telegram" type="text" autocomplete="off" placeholder="@username"></label>
+        <label class="f" for="f-tg" id="f-tg-wrap" hidden>Ник в Telegram<input id="f-tg" name="telegram" type="text" autocomplete="off" placeholder="@username"></label>
         <p class="q-badge" id="q-badge" hidden></p>
         <label class="consent" for="f-ok"><input id="f-ok" type="checkbox" checked required>Согласен на обработку персональных данных</label>
         <button class="btn btn-pipe" type="submit">Отправить заявку</button>
         <p id="f-err" class="consent" hidden style="color:var(--was)">Укажите имя, телефон и, если выбрали Telegram, ник — чтобы мы могли связаться.</p>
       </form>
-      <div class="form-done" id="done" hidden><h3>Заявка принята</h3><p>Напишем или позвоним и попросим отказ Мосгаза и кадастровый номер участка, если вы их ещё не приложили.</p></div>
+      <div class="form-done" id="f-done" hidden><h3>Заявка принята</h3><p>Напишем или позвоним и попросим отказ Мосгаза и кадастровый номер участка, если вы их ещё не приложили.</p></div>
     </div>
   </div>
 </section>
 
 <footer><div class="wrap">CityHouse. Услуга для физических лиц в Новой Москве. Информация на сайте не является офертой.</div></footer>
-<div class="sticky"><a class="btn btn-pipe" href="#check">Проверить участок</a></div>
+<div class="sticky" id="sticky"><button type="button" class="btn btn-pipe" data-open-lead>Оставить заявку</button></div>
+
+<!-- Окно заявки (Тильда: всплывающая форма BF502N / попап по ссылке #popup:lead) -->
+<dialog class="lead-modal" id="lead-modal" aria-labelledby="lm-title">
+  <button type="button" class="lm-close" aria-label="Закрыть" data-close-lead>×</button>
+  <div class="lm-head"><h3 id="lm-title">Заявка на проверку участка</h3><p>Свяжемся с вами, проверим участок по кадастровому номеру и скажем, сможем ли помочь.</p></div>
+  <form id="lead2" novalidate>
+    <label class="f" for="m-name">Имя<input id="m-name" name="name" type="text" autocomplete="given-name" required></label>
+    <label class="f" for="m-phone">Телефон<input id="m-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 ___ ___-__-__" required></label>
+    <fieldset><legend>Как удобнее связаться</legend>
+      <div class="seg">
+        <label><input type="radio" name="via" id="m-via-call" value="Позвонить" checked><span>Позвонить</span></label>
+        <label><input type="radio" name="via" id="m-via-wa" value="WhatsApp"><span>WhatsApp</span></label>
+        <label><input type="radio" name="via" id="m-via-tg" value="Telegram"><span>Telegram</span></label>
+      </div>
+    </fieldset>
+    <label class="f" for="m-tg" id="m-tg-wrap" hidden>Ник в Telegram<input id="m-tg" name="telegram" type="text" autocomplete="off" placeholder="@username"></label>
+    <label class="consent" for="m-ok"><input id="m-ok" type="checkbox" checked required>Согласен на обработку персональных данных</label>
+    <button class="btn btn-pipe" type="submit">Отправить заявку</button>
+    <p id="m-err" class="consent" hidden style="color:var(--was)">Укажите имя, телефон и, если выбрали Telegram, ник — чтобы мы могли связаться.</p>
+  </form>
+  <div class="form-done" id="m-done" hidden><h3>Заявка принята</h3><p>Напишем или позвоним и попросим отказ Мосгаза и кадастровый номер участка, если вы их ещё не приложили.</p></div>
+</dialog>
 
 <dialog class="zoom" id="zoom"><form method="dialog"><button aria-label="Закрыть">×</button></form><img id="zoom-img" alt=""></dialog>
 
@@ -535,22 +568,39 @@ const Q = {"q": [{"q": "Участок в Новой Москве?", "yes": "Д�
   ask(0);
 })();
 
-/* ==== Ник в Telegram — только при выборе Telegram ==== */
-document.querySelectorAll('input[name="via"]').forEach(r => r.addEventListener("change", () => {
-  const tg = document.getElementById("via-tg").checked;
-  document.getElementById("tg-wrap").hidden = !tg;
-  if (tg) document.getElementById("f-tg").focus();
-}));
+/* ==== Две формы: на странице и во всплывающем окне ==== */
+function wireForm(formId, p){
+  const f = document.getElementById(formId);
+  const tgRadio = document.getElementById(p + "via-tg"), tgWrap = document.getElementById(p + "tg-wrap"), tgIn = document.getElementById(p + "tg");
+  f.querySelectorAll('input[name="via"]').forEach(r => r.addEventListener("change", () => {
+    tgWrap.hidden = !tgRadio.checked;
+    if (tgRadio.checked) tgIn.focus();
+  }));
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    const ok = f.name.value.trim() && f.phone.value.replace(/\D/g,"").length >= 10
+      && document.getElementById(p + "ok").checked && (!tgRadio.checked || tgIn.value.trim());
+    document.getElementById(p + "err").hidden = !!ok;
+    if (!ok) return;
+    f.hidden = true; document.getElementById(p + "done").hidden = false;
+  });
+}
+wireForm("lead", "f-");
+wireForm("lead2", "m-");
 
-/* ==== Форма: в превью заявка никуда не уходит; в Тильде — штатный приёмник ==== */
-document.getElementById("lead").addEventListener("submit", e => {
-  e.preventDefault();
-  const f = e.target, tg = document.getElementById("via-tg").checked;
-  const ok = f.name.value.trim() && f.phone.value.replace(/\D/g,"").length >= 10 && document.getElementById("f-ok").checked && (!tg || f.telegram.value.trim());
-  document.getElementById("f-err").hidden = !!ok;
-  if (!ok) return;
-  f.hidden = true; document.getElementById("done").hidden = false;
-});
+/* ==== Липкая кнопка: всегда видна, прячется, когда на экране основная форма ==== */
+(function(){
+  const modal = document.getElementById("lead-modal"), sticky = document.getElementById("sticky");
+  document.querySelectorAll("[data-open-lead]").forEach(b => b.addEventListener("click", () => {
+    if (modal.showModal) modal.showModal(); else location.hash = "#form";
+  }));
+  modal.querySelector("[data-close-lead]").addEventListener("click", () => modal.close());
+  modal.addEventListener("click", e => { if (e.target === modal) modal.close(); });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(es => es.forEach(en => sticky.classList.toggle("away", en.isIntersecting)), {threshold: .25})
+      .observe(document.getElementById("form"));
+  }
+})();
 </script>
 
 </body>
