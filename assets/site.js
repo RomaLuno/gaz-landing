@@ -61,11 +61,11 @@
     const r = el("div","result"); r.dataset.kind = kind;
     let title, text;
     if (kind === "no") { title = Q.no[0]; text = (Q.reasons[reason] || "") + " " + Q.no[1]; }
-    else if (kind === "noref") { title = Q.maybe[0]; text = Q.noref; }
+    else if (kind === "noref") { title = Q.noref_title || Q.maybe[0]; text = Q.noref; }
     else { title = Q[kind][0]; text = Q[kind][1]; }
     r.append(el("h3",null,title), el("p",null,text.trim()));
     const acts = el("div","r-acts");
-    if (kind === "ok" || kind === "maybe") {
+    if (kind === "ok" || kind === "maybe" || kind === "noref") {
       const a = el("a","btn btn-pipe","Оставить заявку"); a.href = "#form"; acts.append(a);
       const b = document.getElementById("q-badge");
       const msg = kind === "ok" ? "Проверка участка: подходит по всем пунктам" : "Проверка участка: расстояние до газопровода уточним";
