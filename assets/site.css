@@ -111,13 +111,13 @@ dialog.zoom button{width:44px;height:44px;border-radius:50%;border:0;background:
 /* ---------- УСЛУГИ ---------- */
 .offer-grid{display:grid;gap:18px;grid-template-columns:1fr}
 @media (min-width:860px){.offer-grid{grid-template-columns:1fr 1fr}}
-.offer-card{display:grid;gap:18px;align-content:start;padding:30px 26px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);min-width:0}
+.offer-card{display:flex;flex-direction:column;gap:18px;padding:30px 26px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);min-width:0}
 .offer-main{border:2px solid var(--pipe);box-shadow:0 18px 40px -30px rgba(217,169,15,.9)}
 .offer-card > p{color:var(--muted)}
 .offer-card ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
 .offer-card li{padding-left:30px;position:relative}
 .offer-card li::before{content:"";position:absolute;left:0;top:.6em;width:18px;height:7px;background:var(--pipe);border-radius:2px}
-.price-row{padding-top:18px;border-top:1px dashed var(--line);font:500 17px/1.45 var(--f-body);color:var(--muted)}
+.price-row{margin-top:auto;padding-top:18px;border-top:1px dashed var(--line);font:500 17px/1.45 var(--f-body);color:var(--muted)}
 .price-row b{font:700 24px/1.25 var(--f-display);display:block;margin-bottom:4px;color:var(--ink)}
 .tag{justify-self:start;font:500 13px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:8px 10px;border-radius:6px;background:var(--tint);color:var(--ink)}
 .offer-main .tag{background:var(--pipe);color:var(--pipe-ink)}
