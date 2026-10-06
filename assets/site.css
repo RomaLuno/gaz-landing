@@ -147,12 +147,13 @@ dialog.zoom button{width:44px;height:44px;border-radius:50%;border:0;background:
 .step::before{content:"";position:absolute;left:23px;top:0;bottom:0;width:10px;background:var(--pipe)}
 .step:first-child::before{top:30px}.step:last-child::before{bottom:calc(100% - 30px)}
 .step-n{position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:#fff;font:700 20px/1 var(--f-display)}
-.step h3{margin-bottom:6px;padding-top:6px}
-.step p{color:var(--muted)}
+.step h3{margin:4px 0 0;padding:14px 18px;background:var(--pipe);color:var(--ink);border-radius:14px;font-size:18px;line-height:1.25}
+.step p{color:var(--muted);margin-top:14px;padding-inline:4px;font-size:15px;line-height:1.5}
 @media (min-width:900px){.steps{grid-template-columns:repeat(4,1fr);gap:22px}
   .step{grid-template-columns:1fr;padding-block:0}
   .step::before{left:0;right:-22px;top:23px;bottom:auto;width:auto;height:10px}
-  .step:first-child::before{top:23px;left:28px}.step:last-child::before{bottom:auto;right:calc(100% - 28px)}}
+  .step:first-child::before{top:23px;left:28px}.step:last-child::before{bottom:auto;right:calc(100% - 28px)}
+  .step h3{margin-top:22px;min-height:3.9em;display:flex;align-items:center}}
 
 /* ---------- СРОК ---------- */
 .cmp{display:grid;border-top:1px solid var(--line);background:var(--surface);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
