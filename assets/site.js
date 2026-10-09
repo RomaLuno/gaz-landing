@@ -120,3 +120,46 @@ wireForm("lead2", "m-");
       .observe(form);
   }
 })();
+
+/* карта проектов: годы по очереди, когда блок виден; клик по году; параллакс картинки */
+(() => {
+  const map = document.querySelector("[data-map]"); if (!map) return;
+  const pts = [...map.querySelectorAll(".map-pt")], rows = [...map.querySelectorAll(".map-years li")];
+  const years = rows.map(r => +r.querySelector("button").dataset.year), cnt = map.querySelector("[data-map-count]");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const show = y => {
+    pts.forEach(p => { p.classList.toggle("on", +p.dataset.year <= y); p.classList.toggle("now", +p.dataset.year === y); });
+    rows.forEach((r, i) => { r.classList.toggle("on", years[i] <= y); r.classList.toggle("now", years[i] === y); });
+    cnt.textContent = pts.filter(p => +p.dataset.year <= y).length;
+  };
+  let timer;
+  const play = () => { let i = 0; clearInterval(timer); show(years[0]);
+    timer = setInterval(() => { if (++i >= years.length) return clearInterval(timer); show(years[i]); }, 750); };
+  rows.forEach((r, i) => r.querySelector("button").addEventListener("click", () => { clearInterval(timer); show(years[i]); }));
+  if (still || !("IntersectionObserver" in window)) { show(years[years.length - 1]); return; }
+  show(0);
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { play(); io.disconnect(); } }), {threshold: .4});
+  io.observe(map);
+  const img = map.querySelector(".map-img"), frame = map.querySelector(".map-frame");
+  let tick = false;
+  addEventListener("scroll", () => { if (tick) return; tick = true; requestAnimationFrame(() => {
+    const r = frame.getBoundingClientRect(), k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+    img.style.transform = `translateY(${Math.max(-1, Math.min(1, k)) * -4.5 - 4.5}%)`; tick = false; }); }, {passive: true});
+})();
+
+/* труба вдоль страницы: ответвление от магистрали в hero, растёт со скроллом, кончается у формы заявки */
+(() => {
+  const main = document.querySelector(".pipe-main"), form = document.getElementById("form");
+  if (!main || !form) return;
+  const run = document.createElement("div"); run.className = "pipe-run"; run.setAttribute("aria-hidden", "true");
+  document.body.appendChild(run); document.body.style.position = "relative";
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let tick = false;
+  const draw = () => {
+    const y0 = main.getBoundingClientRect().bottom + scrollY - 2, end = form.getBoundingClientRect().top + scrollY + 40;
+    const full = end - y0, h = still ? full : Math.min(full, Math.max(0, scrollY + innerHeight * .7 - y0));
+    run.style.top = y0 + "px"; run.style.height = h + "px"; run.classList.toggle("done", h >= full - 1); tick = false;
+  };
+  addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(draw); } }, {passive: true});
+  addEventListener("resize", draw); addEventListener("load", draw); draw();
+})();
