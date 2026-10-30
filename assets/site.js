@@ -66,9 +66,9 @@
     r.append(el("h3",null,title), el("p",null,text.trim()));
     const acts = el("div","r-acts");
     if (kind === "ok" || kind === "maybe" || kind === "noref") {
-      const a = el("a","btn btn-pipe","Оставить заявку"); a.href = "#form"; acts.append(a);
+      const a = el("a","btn btn-pipe",kind === "noref" ? "Получить инструкцию" : "Оставить заявку"); a.href = kind === "noref" ? "/instrukciya/" : "#form"; acts.append(a);  // нет отказа -> посадочная с инструкцией
       const b = document.getElementById("q-badge");
-      const msg = kind === "ok" ? "Проверка участка: подходит по всем пунктам" : "Проверка участка: расстояние до газопровода уточним";
+      const msg = kind === "ok" ? "Проверка участка: подходит по всем пунктам" : kind === "noref" ? "Проверка участка: отказа Мосгаза ещё нет" : "Проверка участка: расстояние до газопровода уточним";
       if (b) { b.textContent = msg; b.hidden = false; }
       document.querySelectorAll('input[name="quiz"]').forEach(i => i.value = msg);
     }
@@ -104,6 +104,22 @@ function wireForm(formId, p){
 }
 wireForm("lead", "f-");
 wireForm("lead2", "m-");
+
+/* ==== Цель на ссылку с data-goal (например, «Бесплатная инструкция» на первом экране) ==== */
+document.addEventListener("click", e => {
+  const a = e.target.closest("a[data-goal]");
+  const ym = document.querySelector("[data-ym]");
+  if (a && a.dataset.goal && window.ym && ym) window.ym(+ym.dataset.ym, "reachGoal", a.dataset.goal);
+});
+
+/* ==== Цели на звонок и мессенджеры: вместе с формой дают составную цель «Обращение» ==== */
+document.addEventListener("click", e => {
+  const a = e.target.closest('a[href^="tel:"], a[href*="t.me/"], a[href*="wa.me/"]');
+  const ym = document.querySelector("[data-ym]");
+  if (!a || !window.ym || !ym) return;
+  const goal = a.href.startsWith("tel:") ? "call" : a.href.includes("wa.me/") ? "whatsapp" : "telegram";
+  window.ym(+ym.dataset.ym, "reachGoal", goal);
+});
 
 /* ==== Липкая кнопка: всегда видна, прячется, когда на экране основная форма ==== */
 (function(){
